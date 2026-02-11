@@ -14,5 +14,12 @@ namespace demo.api.Models
         public DbSet<CountryMaster> CountryMasters { get; set; }
         public DbSet<StateMaster> StateMasters { get; set; }
         public DbSet<DistrictMaster> DistrictMasters { get; set; }
+
+
+        public DbSet<EmployeeBasic> EmployeeBasics { get; set; }
+        public DbSet<EmployeeBank> EmployeeBanks { get; set; }
+
+        public DbSet<ProductModel> ProductModels { get; set; }
+        public DbSet<ProductImageModel> ProductImageModels { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using demo.api.Models;
+using demo.api.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,19 +9,32 @@ namespace demo.api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentMasterController : ControllerBase
     {
         private readonly StudentDbContext _context;
 
-        public StudentMasterController(StudentDbContext context)
+       private readonly StudentService _studentService; 
+
+        public StudentMasterController(StudentDbContext context, StudentService studentService)
         {
             _context = context;
+            _studentService = studentService;
         }
 
+
+        //[HttpGet("getAllStudentMasterData")]
+        //public List<StudentMaster> getAllStudentMasterData()
+        //{
+        //    var list = _context.StudentMasters.ToList();
+        //    return list;
+        //}
+
         [HttpGet("getAllStudentMasterData")]
-        public List<StudentMaster> getAllStudentMasterData()
+        public async Task<List<StudentMaster>> getAllStudentMasterData()
         {
-            var list = _context.StudentMasters.ToList();
+             
+            var list = await _studentService.getAllStudents();
             return list;
         }
 
@@ -73,9 +88,45 @@ namespace demo.api.Controllers
         [HttpPost("CreateStudent")]
         public async Task <StudentMaster> CreateNewStudent(StudentMaster obj)
         {
-            _context.StudentMasters.Add(obj);
-            await _context.SaveChangesAsync();
-            return obj;
+            var isExist = _context.StudentMasters.SingleOrDefault(m => m.userName == obj.userName);
+            if(isExist != null)
+            {
+                throw new Exception("UserName Already Exist");
+            } else
+            {
+                _context.StudentMasters.Add(obj);
+                await _context.SaveChangesAsync();
+                return obj;
+            }
+           
+        }
+
+        [HttpPost("login")]
+        public IActionResult LoginStudent(StudentLoginModel obj)
+        {
+            var isUserPresent = _context.StudentMasters.SingleOrDefault(x => x.userName == obj.userName && x.password == obj.password);
+            if(isUserPresent != null)
+            {
+                LoginReturnModel loginData = new LoginReturnModel()
+                {
+                    email = isUserPresent.email,
+                    mobile = isUserPresent.mobile,
+                    studId = isUserPresent.studId,
+                    studName = isUserPresent.studName
+                };
+
+                LoginReturnModel loginmodel2  = new LoginReturnModel();
+                loginmodel2.mobile = isUserPresent.mobile;
+                loginmodel2.email   = isUserPresent.email;
+                loginmodel2.studId  = isUserPresent.studId;
+                loginmodel2.studName= isUserPresent.studName;
+
+                return StatusCode(200, loginData);
+            } else
+            {
+                return StatusCode(401, "Invalid Credentials");
+            }
+
         }
 
         [HttpGet("checkIfPanCardExit")]
