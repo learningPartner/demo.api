@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddDbContext<StudentDbContext>(opt =>
-opt.UseSqlServer(builder.Configuration.GetConnectionString("b32test")));
+opt.UseSqlServer(builder.Configuration.GetConnectionString("demoCon")));
 
 var app = builder.Build();
 

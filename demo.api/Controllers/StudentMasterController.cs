@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace demo.api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+     
     public class StudentMasterController : ControllerBase
     {
         private readonly StudentDbContext _context;
@@ -94,9 +95,16 @@ namespace demo.api.Controllers
                 throw new Exception("UserName Already Exist");
             } else
             {
-                _context.StudentMasters.Add(obj);
-                await _context.SaveChangesAsync();
-                return obj;
+                if(ModelState.IsValid == false)
+                {
+                    throw new Exception("Model State is Invalid");
+                } else
+                {
+                    _context.StudentMasters.Add(obj);
+                    await _context.SaveChangesAsync();
+                    return obj;
+                }
+               
             }
            
         }

@@ -9,9 +9,15 @@ namespace demo.api.Models
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int studId { get; set; } 
         public string studName { get; set; }   = string.Empty;
+        [Required(ErrorMessage = "Mobile number is required")]
+        [MaxLength(10)]
+        [MinLength(10)]
         public string mobile { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;
+        [RegularExpression(@"^[A-Z]{5}[0-9]{4}[A-Z]{1}$", ErrorMessage = "Invalid PAN card number")]
         public string pancard { get; set; } = string.Empty;
+        [Required]
+        [MaxLength(12)]
         public string aadharcard { get; set; } = string.Empty;
         public bool isActive { get; set; }
         public string userName { get; set; } = string.Empty;
