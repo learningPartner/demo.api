@@ -17,12 +17,34 @@ namespace demo.api.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllCountries")]
         public IActionResult GetAllCountries()
         {
             try
             {
                 var list = _context.CountryMasters.ToList();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("GetAllState")]
+        public IActionResult GetAllState()
+        {
+            try
+            {
+
+                var list = (from state in _context.StateMasters
+                            join country in _context.CountryMasters on state.countryId equals country.countryId 
+                            select new
+                            {
+                                stateId = state.stateId,
+                                stateName =  state.stateName,
+                                countyName = country.countryName
+                            }).ToList();
                 return Ok(list);
             }
             catch (Exception ex)

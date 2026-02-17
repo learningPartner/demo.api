@@ -31,6 +31,17 @@ namespace demo.api.Models
         public string studName { get; set; } = string.Empty;
     }
 
+    public class StudentFilterMiodel
+    {
+        public int pageNumber { get; set; } = 1;
+        public int pageSize { get; set; } = 10;
+        public string sortBy { get; set; } = "studName";
+        public string sortDirection { get; set; } = "asc";
+        public string? studName { get; set; }
+        public string? mobile { get; set; }
+        public string? email { get; set; }
+    }
+
     public class StudentLoginModel
     {
         public string userName { get; set; } = string.Empty;

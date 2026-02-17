@@ -8,7 +8,7 @@ namespace demo.api.Models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int countryId { get; set; }
-        public string countyName { get; set; } = string.Empty;
+        public string countryName { get; set; } = string.Empty;
 
     }
     [Table("stateMaster")]

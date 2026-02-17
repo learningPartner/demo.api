@@ -39,6 +39,85 @@ namespace demo.api.Controllers
             return list;
         }
 
+        [HttpGet("GetStudentsPagination")]
+        public async Task<IActionResult> GetStudents(int pageNumber = 1, int pageSize = 10)
+        {
+            var totalRecords = await _context.StudentMasters.CountAsync();
+            var students = await _context.StudentMasters
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Students = students
+            });
+        }
+
+        [HttpPost("GetStudentsPaginationWithSorting")]
+        public async Task<IActionResult> GetStudentsPaginationWithSorting(StudentFilterMiodel obj)
+        {
+            var query = _context.StudentMasters.AsQueryable();
+
+            if (!string.IsNullOrEmpty(obj.studName))
+            {
+                query = query.Where(s => s.studName.Contains(obj.studName));
+            }
+
+            if (!string.IsNullOrEmpty(obj.mobile))
+            {
+                query = query.Where(s => s.mobile.Contains(obj.mobile));
+            }
+
+            if (!string.IsNullOrEmpty(obj.email))
+            {
+                query = query.Where(s => s.email.Contains(obj.email));
+            }
+            // Sorting
+            switch (obj.sortBy.ToLower())
+            {
+                case "studName":
+                    query = obj.sortDirection.ToLower() == "desc" ? query.OrderByDescending(s => s.studName) : query.OrderBy(s => s.studName);
+                    break;
+
+                case "email":
+                    query = obj.sortDirection.ToLower() == "desc"
+                        ? query.OrderByDescending(s => s.email)
+                        : query.OrderBy(s => s.email);
+                    break;
+
+                default:
+                    query = obj.sortDirection.ToLower() == "desc"
+                        ? query.OrderByDescending(s => s.studName)
+                        : query.OrderBy(s => s.studName);
+                    break;
+            }
+
+            var totalRecords = await query.CountAsync();
+
+            var students = await query
+                .Skip((obj.pageNumber - 1) * obj.pageSize)
+                .Take(obj.pageSize)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                PageNumber = obj.pageNumber,
+                PageSize = obj.pageSize,
+                Students = students
+            });
+        }
+
+
+
+
+
+
+
 
         [HttpGet("getStudentDropdwonData")]
         public List<StudentDropdownModel> getStudentDropdwonData()
